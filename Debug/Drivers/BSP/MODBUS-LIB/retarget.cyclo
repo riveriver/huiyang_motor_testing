@@ -1,7 +1,0 @@
-../Drivers/BSP/MODBUS-LIB/retarget.c:22:6:RetargetInit	1
-../Drivers/BSP/MODBUS-LIB/retarget.c:30:5:_isatty	3
-../Drivers/BSP/MODBUS-LIB/retarget.c:38:5:_write	4
-../Drivers/BSP/MODBUS-LIB/retarget.c:76:5:_close	3
-../Drivers/BSP/MODBUS-LIB/retarget.c:84:5:_lseek	1
-../Drivers/BSP/MODBUS-LIB/retarget.c:93:5:_read	3
-../Drivers/BSP/MODBUS-LIB/retarget.c:107:5:_fstat	3

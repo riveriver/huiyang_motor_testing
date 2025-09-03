@@ -1,4 +1,4 @@
-Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
+Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
@@ -35,35 +35,14 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
- ../Core/Inc/FreeRTOSConfig.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../FATFS/App/fatfs.h ../Middlewares/Third_Party/FatFs/src/ff.h \
  ../Middlewares/Third_Party/FatFs/src/integer.h ../FATFS/Target/ffconf.h \
  ../FATFS/Target/bsp_driver_sd.h \
  ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/sd_diskio.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/retarget.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Modbus.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusConfig.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Sensor.h \
- /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Modbus.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
- ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
+ ../Core/Inc/sdmmc.h ../Core/Inc/main.h ../Core/Inc/tim.h \
+ ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/retarget.h
 ../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -101,17 +80,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
-../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
-../Core/Inc/FreeRTOSConfig.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h:
-../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
-../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 ../FATFS/App/fatfs.h:
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 ../Middlewares/Third_Party/FatFs/src/integer.h:
@@ -121,15 +89,9 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FatFs/src/diskio.h:
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 ../FATFS/Target/sd_diskio.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/retarget.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Modbus.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusConfig.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Sensor.h:
-/home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Modbus.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h:
-../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
+../Core/Inc/sdmmc.h:
+../Core/Inc/main.h:
+../Core/Inc/tim.h:
+../Core/Inc/usart.h:
+../Core/Inc/gpio.h:
+../Core/Inc/retarget.h:

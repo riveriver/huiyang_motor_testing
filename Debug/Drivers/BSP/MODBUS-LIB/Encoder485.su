@@ -1,7 +1,0 @@
-../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	16	static
-../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:virtual ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	16	static
-../Drivers/BSP/MODBUS-LIB/Encoder485.cpp:13:1:Encoder485::Encoder485(TIM_HandleTypeDef*, uint8_t, UART_HandleTypeDef*)	24	static
-../Drivers/BSP/MODBUS-LIB/Encoder485.cpp:19:6:virtual void Encoder485::init()	16	static
-../Drivers/BSP/MODBUS-LIB/Encoder485.cpp:33:6:virtual bool Encoder485::constructQuery(modbus_t*)	16	static
-../Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:Encoder485::~Encoder485()	16	static
-../Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:virtual Encoder485::~Encoder485()	16	static
