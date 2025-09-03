@@ -1,0 +1,18 @@
+../Drivers/BSP/MODBUS-LIB/Sensor.h:44:7:constexpr Sensor::Sensor()	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:7:1:ModbusAbsoluteEncoder::ModbusAbsoluteEncoder(TIM_HandleTypeDef*, uint8_t)	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:27:6:virtual void ModbusAbsoluteEncoder::init()	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:38:6:bool ModbusAbsoluteEncoder::sendModbusQuery()	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:50:6:bool ModbusAbsoluteEncoder::checkModbusResponse()	2
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:72:6:void ModbusAbsoluteEncoder::startAsyncReading(uint32_t)	6
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:94:6:void ModbusAbsoluteEncoder::stopAsyncReading()	2
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:103:7:virtual float ModbusAbsoluteEncoder::getAngle()	4
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:130:6:void ModbusAbsoluteEncoder::asyncUpdateCallback()	5
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:152:7:virtual float ModbusAbsoluteEncoder::getSensorAngle()	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:156:7:float ModbusAbsoluteEncoder::getReceiveFrequency() const	2
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:164:6:void ModbusAbsoluteEncoder::resetFrequencyStats()	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:169:10:static uint16_t ModbusAbsoluteEncoder::rad2reg(float)	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:173:7:static float ModbusAbsoluteEncoder::reg2rad(uint16_t)	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:177:10:static uint16_t ModbusAbsoluteEncoder::u322reg(uint32_t)	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:181:10:static uint32_t ModbusAbsoluteEncoder::reg2u32(uint16_t)	1
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:185:6:void ModbusAbsoluteEncoder::updateAngleFromPosition(uint32_t)	3
+../Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.cpp:198:6:void ModbusAbsoluteEncoder::setAngleUpdateCallback(void (*)(uint32_t))	1
