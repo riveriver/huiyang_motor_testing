@@ -61,7 +61,10 @@ void Error_Handler(void);
 #define PE3_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
-
+#define ENABLE_STACK_WATERMARK
+#define USE_HEARTBEAT_LED
+#define USE_MOBUSRTU_ENCODER
+#define USE_SD_LOG
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
