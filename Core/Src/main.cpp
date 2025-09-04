@@ -3,6 +3,7 @@
 STM32CudeMX regenerate todo
 1. MX_FATFS_Init need to move to task function，otherwise, it will cause sd card mount failed.
 2. ensure defaultTask stack size is large enough > 2048*4
+3. char timeStr[256]; is large enough,it will cause hard fault.
 
 */
 /* USER CODE END Header */
@@ -149,7 +150,7 @@ BYTE WriteBuffer[] =            /* 写缓冲区 */
     "hello word\r\n";
 uint16_t file_memory=0;
 uint32_t lastWriteTime = 0;     /* 上次写入时间 */
-char timeStr[20];               /* 时间字符串缓冲区 */
+char timeStr[256];               /* 时间字符串缓冲区 */
 
 void init_file(){
   // mount SD card
@@ -188,26 +189,6 @@ EventGroupHandle_t encoderEventGroup = NULL; // 事件组用于编码器任务�
 uint32_t oid_encoder = 0;
 void angleUpdateCallback(uint32_t position){
   oid_encoder = position;
-  // // TickType_t ticks = xTaskGetTickCount();
-  // TickType_t ticks = 1000;
-  // uint32_t totalMs = ticks * portTICK_PERIOD_MS;
-  // uint32_t ms = totalMs % 1000;
-  // uint32_t totalSec = totalMs / 1000;
-  // uint32_t sec = totalSec % 60;
-  // uint32_t totalMin = totalSec / 60;
-  // uint32_t min = totalMin % 60;
-  // uint32_t hour = totalMin / 60;
-
-  // // 格式化时间和位置数据
-  // sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms, position);
-
-  // // 写入文件
-  // if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK) {
-  //   f_sync(&file);  // 确保数据写入到磁盘
-  // } else {
-  //   printf("data write failed\r\n");
-  // }
-  // printf("angleUpdateCallback: %lu\n", position);
 }
 
 #endif
@@ -250,14 +231,14 @@ void StartDefaultTask(void *argument)
    if(currentTime - led_flash_time >= 1000)
    {
 	  HAL_GPIO_TogglePin(PE3_GPIO_Port,PE3_Pin);
-    led_flash_time = currentTime;
+      led_flash_time = currentTime;
    }
 #endif
 
 #ifdef USE_MOBUSRTU_ENCODER
     xEventGroupWaitBits(encoderEventGroup, ENCODER_TICK_EVENT_BIT, pdTRUE, pdFALSE, portMAX_DELAY);
     encoder485.asyncUpdateCallback();
-    printf("oid_encoder: %lu\n", oid_encoder);
+    // printf("oid_encoder: %lu\n", oid_encoder);
 #endif
     
 #ifdef USE_SD_LOG
@@ -271,7 +252,7 @@ void StartDefaultTask(void *argument)
      uint32_t totalMin = totalSec / 60;
      uint32_t min = totalMin % 60;
      uint32_t hour = totalMin / 60;
-     sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu\r\n", hour, min, sec, ms);
+      sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms,oid_encoder);
      if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK){
        f_sync(&file);
        printf("write: %s", timeStr);
