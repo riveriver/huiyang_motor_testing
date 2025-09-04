@@ -61,7 +61,9 @@ const osThreadAttr_t keyTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-
+#ifdef USE_SD_LOG
+volatile bool g_isRecording = false;  // 控制SD卡记录的全局标志
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -235,7 +237,10 @@ static void scan_key(void)
             if(keyState.current == GPIO_PIN_SET)  // 按键按下（高电平有效）
             {
                 keyState.pressed = 1;
-                printf("Button Pressed!\r\n");
+                #ifdef USE_SD_LOG
+                g_isRecording = !g_isRecording;  // 切换记录状态
+                printf("Data Recording: %s\r\n", g_isRecording ? "Started" : "Stopped");
+                #endif
             }
             keyState.debounceState = keyState.current;
         }
@@ -278,16 +283,7 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
 	  osDelay(1);
-    uint32_t currentTime = osKernelGetTickCount();
-
-#ifdef USE_HEARTBEAT_LED
-   static uint32_t led_flash_time = 0;
-   if(currentTime - led_flash_time >= 1000)
-   {
-	  HAL_GPIO_TogglePin(PE3_GPIO_Port,PE3_Pin);
-      led_flash_time = currentTime;
-   }
-#endif
+	  uint32_t currentTime = osKernelGetTickCount();
 
 #ifdef USE_MOBUSRTU_ENCODER
     xEventGroupWaitBits(encoderEventGroup, ENCODER_TICK_EVENT_BIT, pdTRUE, pdFALSE, portMAX_DELAY);
@@ -296,27 +292,33 @@ void StartDefaultTask(void *argument)
 #endif
     
 #ifdef USE_SD_LOG
-  //  static uint32_t log_write_time = 0;
-  //  if(currentTime - log_write_time >= 6000)
-  //  {
-     uint32_t totalMs = currentTime;
-     uint32_t ms = totalMs % 1000;
-     uint32_t totalSec = totalMs / 1000;
-     uint32_t sec = totalSec % 60;
-     uint32_t totalMin = totalSec / 60;
-     uint32_t min = totalMin % 60;
-     uint32_t hour = totalMin / 60;
-     sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms,oid_encoder);
-     if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK){
-       f_sync(&file);
-       printf("write: %s", timeStr);
+     if(g_isRecording) {  // 只在记录状态为true时写入数据
+       uint32_t totalMs = currentTime;
+       uint32_t ms = totalMs % 1000;
+       uint32_t totalSec = totalMs / 1000;
+       uint32_t sec = totalSec % 60;
+       uint32_t totalMin = totalSec / 60;
+       uint32_t min = totalMin % 60;
+       uint32_t hour = totalMin / 60;
+       sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms, oid_encoder);
+       if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK) {
+         f_sync(&file);
+         printf("write: %s", timeStr);
+       }
+       else {
+         printf("write failed\r\n");
+       }
      }
-     else
-     {
-       printf("write failed\r\n");
-     }
-  //    log_write_time = currentTime;
-  //  }
+#endif
+
+#ifdef USE_HEARTBEAT_LED
+   static uint32_t led_flash_time = 0;
+   uint32_t flash_interval = g_isRecording ? 333 : 1000;  // 开启记录时3Hz(333ms)，否则1Hz
+   if(currentTime - led_flash_time >= flash_interval)
+   {
+      HAL_GPIO_TogglePin(PE3_GPIO_Port, PE3_Pin);
+      led_flash_time = currentTime;
+   }
 #endif
 
 #ifdef ENABLE_STACK_WATERMARK
@@ -737,6 +739,9 @@ void StartKeyTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    osDelay(100);
+    uint32_t currentTime = osKernelGetTickCount();
+
     scan_key();
 
 #ifdef ENABLE_STACK_WATERMARK
@@ -745,7 +750,6 @@ void StartKeyTask(void *argument)
    printf("StartKeyTask Stack Bytes Left: %lu\r\n", stackHighWaterMark * sizeof(StackType_t));
 #endif
 
-    osDelay(100);  // 10ms delay for key scanning
   }
 }
 
