@@ -3,7 +3,10 @@
 STM32CudeMX regenerate todo
 1. MX_FATFS_Init need to move to task function，otherwise, it will cause sd card mount failed.
 2. ensure defaultTask stack size is large enough > 2048*4
-3. char timeStr[256]; is large enough,it will cause hard fault.
+3. char timeStr[256]; is large enough,it will cause har  for(;;)
+  {
+    osDelay(10);
+    uint32_t currentTime = osKernelGetTickCount();
 
 */
 /* USER CODE END Header */
@@ -49,6 +52,14 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 2048 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+/* Definitions for keyTask */
+osThreadId_t keyTaskHandle;
+const osThreadAttr_t keyTask_attributes = {
+  .name = "keyTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -62,6 +73,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
+void StartKeyTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -131,14 +143,6 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableDCache();
 }
 
-void LED_Blink(uint32_t delay)
-{
-	HAL_GPIO_WritePin(PE3_GPIO_Port,PE3_Pin,GPIO_PIN_SET);
-	HAL_Delay(delay - 1);
-	HAL_GPIO_WritePin(PE3_GPIO_Port,PE3_Pin,GPIO_PIN_RESET);
-	HAL_Delay(500-1);
-}
-
 #ifdef USE_SD_LOG
 
 FATFS fs;                       /* FatFs 文件系统对象 */
@@ -193,6 +197,53 @@ void angleUpdateCallback(uint32_t position){
 
 #endif
 
+// 按键状态结构体
+typedef struct {
+    uint8_t current;          // 当前状态
+    uint8_t last;            // 上一次状态
+    uint8_t debounceState;   // 消抖后状态
+    uint32_t debounceTime;   // 消抖时间点
+    uint8_t pressed;         // 按下标志
+} KEY_State_TypeDef;
+
+static KEY_State_TypeDef keyState = {0};
+
+static void init_key(void)
+{
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+}
+
+// 按键消抖检测
+static void scan_key(void)
+{
+    keyState.current = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+    
+    if(keyState.current != keyState.last)
+    {
+        keyState.debounceTime = osKernelGetTickCount();
+    }
+    
+    if(osKernelGetTickCount() - keyState.debounceTime >= 20)  // 20ms消抖
+    {
+        if(keyState.current != keyState.debounceState)
+        {
+            if(keyState.current == GPIO_PIN_SET)  // 按键按下（高电平有效）
+            {
+                keyState.pressed = 1;
+                printf("Button Pressed!\r\n");
+            }
+            keyState.debounceState = keyState.current;
+        }
+    }
+    
+    keyState.last = keyState.current;
+}
+
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
@@ -216,14 +267,17 @@ void StartDefaultTask(void *argument)
   if(encoderEventGroup == NULL){
       encoderEventGroup = xEventGroupCreate();
   }
+  // 400-->53Hz;250-->53Hz;60-->30Hz;10-->5Hz;
   encoder485.startAsyncReading(10);
   printf("Encoder task ready, waiting for TIM3 notifications...\r\n");
 #endif
 
+  printf("Default task started...\r\n");
+
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(1000);
+	  osDelay(1);
     uint32_t currentTime = osKernelGetTickCount();
 
 #ifdef USE_HEARTBEAT_LED
@@ -242,9 +296,9 @@ void StartDefaultTask(void *argument)
 #endif
     
 #ifdef USE_SD_LOG
-   static uint32_t log_write_time = 0;
-   if(currentTime - log_write_time >= 6000)
-   {
+  //  static uint32_t log_write_time = 0;
+  //  if(currentTime - log_write_time >= 6000)
+  //  {
      uint32_t totalMs = currentTime;
      uint32_t ms = totalMs % 1000;
      uint32_t totalSec = totalMs / 1000;
@@ -252,7 +306,7 @@ void StartDefaultTask(void *argument)
      uint32_t totalMin = totalSec / 60;
      uint32_t min = totalMin % 60;
      uint32_t hour = totalMin / 60;
-      sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms,oid_encoder);
+     sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms,oid_encoder);
      if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK){
        f_sync(&file);
        printf("write: %s", timeStr);
@@ -261,14 +315,14 @@ void StartDefaultTask(void *argument)
      {
        printf("write failed\r\n");
      }
-     log_write_time = currentTime;
-   }
+  //    log_write_time = currentTime;
+  //  }
 #endif
 
 #ifdef ENABLE_STACK_WATERMARK
    // 获取并打印任务栈最小剩余空间
    UBaseType_t stackHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
-   printf("Stack High Water Mark: %lu bytes\r\n", stackHighWaterMark * sizeof(StackType_t));
+   printf("StartDefaultTask Stack Bytes Left: %lu\r\n", stackHighWaterMark * sizeof(StackType_t));
 #endif
   }
 }
@@ -341,6 +395,8 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of keyTask */
+  keyTaskHandle = osThreadNew(StartKeyTask, NULL, &keyTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -636,7 +692,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
@@ -672,6 +727,28 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
+
+/* Function implementing the keyTask thread */
+void StartKeyTask(void *argument)
+{
+  /* Initialization */
+  init_key();
+  
+  /* Infinite loop */
+  for(;;)
+  {
+    scan_key();
+
+#ifdef ENABLE_STACK_WATERMARK
+   // 获取并打印任务栈最小剩余空间
+   UBaseType_t stackHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+   printf("StartKeyTask Stack Bytes Left: %lu\r\n", stackHighWaterMark * sizeof(StackType_t));
+#endif
+
+    osDelay(100);  // 10ms delay for key scanning
+  }
+}
+
 //__weak void StartDefaultTask(void *argument)
 //{
 //  /* USER CODE BEGIN 5 */
@@ -714,7 +791,6 @@ void Error_Handler(void)
   /* User can add his own implementation to report the HAL error return state */
   while (1)
   {
-		LED_Blink(500);
   }
   /* USER CODE END Error_Handler_Debug */
 }

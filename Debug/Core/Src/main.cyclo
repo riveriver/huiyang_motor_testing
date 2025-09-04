@@ -1,25 +1,27 @@
-../Core/Src/main.cpp:71:13:void MPU_Config()	1
-../Core/Src/main.cpp:124:13:void CPU_CACHE_Enable()	5
-../Core/Src/main.cpp:133:6:void LED_Blink(uint32_t)	1
-../Core/Src/main.cpp:154:6:void init_file()	4
+../Core/Src/main.cpp:84:13:void MPU_Config()	1
+../Core/Src/main.cpp:137:13:void CPU_CACHE_Enable()	5
+../Core/Src/main.cpp:159:6:void init_file()	4
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:16:10:bool ModbusAbsoluteEncoder::isInitialized() const	1
-../Core/Src/main.cpp:189:6:void angleUpdateCallback(uint32_t)	1
-../Core/Src/main.cpp:195:6:void StartDefaultTask(void*)	7
-../Core/Src/main.cpp:280:5:int main()	1
-../Core/Src/main.cpp:370:6:void SystemClock_Config()	4
-../Core/Src/main.cpp:428:6:void PeriphCommonClock_Config()	2
-../Core/Src/main.cpp:457:13:void MX_SDMMC1_SD_Init()	1
-../Core/Src/main.cpp:484:13:void MX_TIM3_Init()	4
-../Core/Src/main.cpp:532:13:void MX_USART2_UART_Init()	5
-../Core/Src/main.cpp:580:13:void MX_USART3_UART_Init()	5
-../Core/Src/main.cpp:628:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:693:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
-../Core/Src/main.cpp:710:6:void Error_Handler()	1
-../Core/Src/main.cpp:719:1:void __static_initialization_and_destruction_0()	1
+../Core/Src/main.cpp:194:6:void angleUpdateCallback(uint32_t)	1
+../Core/Src/main.cpp:211:13:void init_key()	1
+../Core/Src/main.cpp:222:13:void scan_key()	5
+../Core/Src/main.cpp:247:6:void StartDefaultTask(void*)	6
+../Core/Src/main.cpp:335:5:int main()	1
+../Core/Src/main.cpp:427:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:485:6:void PeriphCommonClock_Config()	2
+../Core/Src/main.cpp:514:13:void MX_SDMMC1_SD_Init()	1
+../Core/Src/main.cpp:541:13:void MX_TIM3_Init()	4
+../Core/Src/main.cpp:589:13:void MX_USART2_UART_Init()	5
+../Core/Src/main.cpp:637:13:void MX_USART3_UART_Init()	5
+../Core/Src/main.cpp:685:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:732:6:void StartKeyTask(void*)	1
+../Core/Src/main.cpp:771:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
+../Core/Src/main.cpp:788:6:void Error_Handler()	1
+../Core/Src/main.cpp:796:1:void __static_initialization_and_destruction_0()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:virtual ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:Encoder485::~Encoder485()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:virtual Encoder485::~Encoder485()	1
-../Core/Src/main.cpp:719:1:void __static_initialization_and_destruction_1()	1
-../Core/Src/main.cpp:719:1:cpp)	1
-../Core/Src/main.cpp:719:1:cpp)	1
+../Core/Src/main.cpp:796:1:void __static_initialization_and_destruction_1()	1
+../Core/Src/main.cpp:796:1:cpp)	1
+../Core/Src/main.cpp:796:1:cpp)	1
