@@ -19,6 +19,7 @@ STM32CudeMX regenerate todo
 /* USER CODE BEGIN Includes */
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include "retarget.h"
 /* USER CODE END Includes */
 
@@ -152,32 +153,88 @@ FIL file;                       /* 文件对象 */
 FRESULT f_res;                  /* 文件操作结果 */
 UINT fnum;                      /* 文件成功读写数量 */
 BYTE ReadBuffer[1024] = {0};    /* 读缓冲区 */
-BYTE WriteBuffer[] =            /* 写缓冲区 */
-    "hello word\r\n";
-uint16_t file_memory=0;
-uint32_t lastWriteTime = 0;     /* 上次写入时间 */
-char timeStr[256];               /* 时间字符串缓冲区 */
+char timeStr[256];              /* 时间字符串缓冲区 */
+char filename[32];              /* 文件名缓冲区 */
+uint32_t file_counter = 0;      /* 文件计数器 */
+
+// 查找最新的文件编号
+static void find_latest_file(void) {
+    DIR dir;
+    FILINFO fno;
+    printf("Starting directory scan...\r\n");
+    
+    f_res = f_opendir(&dir, "/");
+    if (f_res != FR_OK) {
+        printf("Failed to open root directory, error: %d\r\n", f_res);
+        return;
+    }
+    
+    while (1) {
+        f_res = f_readdir(&dir, &fno);
+        if (f_res != FR_OK) {
+            printf("Error reading directory, error: %d\r\n", f_res);
+            break;
+        }
+        if (fno.fname[0] == 0) break; // 没有更多文件
+#ifdef ENABLE_FILE_LOG
+        printf("Found file: %s, Attrib: 0x%02X\r\n", fno.fname, fno.fattrib);
+#endif
+        if (!(fno.fattrib & AM_DIR)) { // 如果不是目录
+            // 创建临时缓冲区用于存储小写文件名
+            char lower_fname[32];
+            strncpy(lower_fname, fno.fname, sizeof(lower_fname)-1);
+            lower_fname[sizeof(lower_fname)-1] = '\0';
+            
+            // 转换为小写
+            for(int i = 0; lower_fname[i]; i++) {
+                lower_fname[i] = tolower(lower_fname[i]);
+            }
+            
+            if (strncmp(lower_fname, "data", 4) == 0) {
+                char* csv_ext = strstr(lower_fname, ".csv");
+                if (csv_ext != NULL) {
+                    int num = 0;
+                    if (sscanf(lower_fname, "data%d.csv", &num) == 1) {
+                        printf("Found data file number: %d\r\n", num);
+                        if (num >= file_counter) {
+                            file_counter = num + 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    printf("Directory scan complete. Latest file counter: %lu\r\n", file_counter);
+    f_closedir(&dir);
+}
+
+static void create_new_file(void) {
+    // 生成新文件名
+    sprintf(filename, "data%lu.csv", file_counter++);
+    
+    // 创建新文件
+    f_res = f_open(&file, filename, FA_CREATE_ALWAYS | FA_WRITE);
+    if(f_res == FR_OK) {
+        // 写入CSV文件头
+        f_printf(&file, "Time(ms),Motor_Freq,Encoder_Value\r\n");
+        printf("Created new file: %s\r\n", filename);
+    } else {
+        printf("Failed to create file: %s, error: %d\r\n", filename, f_res);
+    }
+}
 
 void init_file(){
   // mount SD card
   f_res = f_mount(&fs, "0:", 1);
-	if(f_res != FR_OK){
+  if(f_res != FR_OK){
     printf("f_mount error: %d\r\n", f_res);
     return;
   }
-	printf("sd mount ok\r\n");
-
-  // open or create file
-	f_res = f_open(&file, "testing.csv", FA_OPEN_ALWAYS | FA_WRITE | FA_READ);
-	if(f_res != FR_OK){
-    printf("f_open error: %d\r\n", f_res);
-    return;
-  }
-  printf("testing.csv open ok\r\n");
-  f_lseek(&file, f_size(&file));
-  if(f_size(&file) == 0) {
-    f_printf(&file, "Time(hh:mm:ss:msms)\r\n");
-  }
+  printf("sd mount ok\r\n");
+  
+  // 查找现有文件中的最大编号
+  find_latest_file();
 }
 
 #endif
@@ -192,6 +249,7 @@ void init_file(){
 Encoder485 encoder485(&htim3, 1, &huart2);
 EventGroupHandle_t encoderEventGroup = NULL; // 事件组用于编码器任务同步
 #define ENCODER_TICK_EVENT_BIT (1 << 0)
+uint32_t motor_freq = 0;
 uint32_t oid_encoder = 0;
 void angleUpdateCallback(uint32_t position){
   oid_encoder = position;
@@ -239,6 +297,14 @@ static void scan_key(void)
                 keyState.pressed = 1;
                 #ifdef USE_SD_LOG
                 g_isRecording = !g_isRecording;  // 切换记录状态
+                if(g_isRecording) {
+                    // 创建新文件
+                    create_new_file();
+                } else {
+                    // 关闭当前文件
+                    f_close(&file);
+                    printf("File closed: %s\r\n", filename);
+                }
                 printf("Data Recording: %s\r\n", g_isRecording ? "Started" : "Stopped");
                 #endif
             }
@@ -273,7 +339,7 @@ void StartDefaultTask(void *argument)
       encoderEventGroup = xEventGroupCreate();
   }
   // 400-->53Hz;250-->53Hz;60-->30Hz;10-->5Hz;
-  encoder485.startAsyncReading(10);
+  encoder485.startAsyncReading(100);
   printf("Encoder task ready, waiting for TIM3 notifications...\r\n");
 #endif
 
@@ -283,8 +349,6 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
 	  osDelay(1);
-	  uint32_t currentTime = osKernelGetTickCount();
-
 #ifdef USE_MOBUSRTU_ENCODER
     xEventGroupWaitBits(encoderEventGroup, ENCODER_TICK_EVENT_BIT, pdTRUE, pdFALSE, portMAX_DELAY);
     encoder485.asyncUpdateCallback();
@@ -293,14 +357,15 @@ void StartDefaultTask(void *argument)
     
 #ifdef USE_SD_LOG
      if(g_isRecording) {  // 只在记录状态为true时写入数据
-       uint32_t totalMs = currentTime;
-       uint32_t ms = totalMs % 1000;
-       uint32_t totalSec = totalMs / 1000;
-       uint32_t sec = totalSec % 60;
-       uint32_t totalMin = totalSec / 60;
-       uint32_t min = totalMin % 60;
-       uint32_t hour = totalMin / 60;
-       sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu\r\n", hour, min, sec, ms, oid_encoder);
+       uint32_t totalMs = osKernelGetTickCount();
+      //  uint32_t ms = totalMs % 1000;
+      //  uint32_t totalSec = totalMs / 1000;
+      //  uint32_t sec = totalSec % 60;
+      //  uint32_t totalMin = totalSec / 60;
+      //  uint32_t min = totalMin % 60;
+      //  uint32_t hour = totalMin / 60;
+      //  sprintf(timeStr, "%02lu:%02lu:%02lu:%03lu,%lu,%lu\r\n", hour, min, sec, ms, motor_freq, oid_encoder);
+       sprintf(timeStr, "%lu,%lu,%lu\r\n", totalMs, motor_freq, oid_encoder);
        if(f_write(&file, timeStr, strlen(timeStr), &fnum) == FR_OK) {
          f_sync(&file);
          printf("write: %s", timeStr);
@@ -309,16 +374,6 @@ void StartDefaultTask(void *argument)
          printf("write failed\r\n");
        }
      }
-#endif
-
-#ifdef USE_HEARTBEAT_LED
-   static uint32_t led_flash_time = 0;
-   uint32_t flash_interval = g_isRecording ? 333 : 1000;  // 开启记录时3Hz(333ms)，否则1Hz
-   if(currentTime - led_flash_time >= flash_interval)
-   {
-      HAL_GPIO_TogglePin(PE3_GPIO_Port, PE3_Pin);
-      led_flash_time = currentTime;
-   }
 #endif
 
 #ifdef ENABLE_STACK_WATERMARK
@@ -739,10 +794,24 @@ void StartKeyTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+    osDelay(10);  // 缩短延时以保证LED闪烁的准确性
     uint32_t currentTime = osKernelGetTickCount();
 
     scan_key();
+
+#ifdef USE_HEARTBEAT_LED
+    static uint32_t led_flash_time = 0;
+    static uint8_t led_flash_count = 0;
+    
+    // 根据记录状态设置不同的闪烁间隔
+    uint32_t flash_interval = g_isRecording ? 167 : 500;  // 开启记录时3Hz(167ms翻转)，否则1Hz(500ms翻转)
+    
+    if(currentTime - led_flash_time >= flash_interval)
+    {
+        HAL_GPIO_TogglePin(PE3_GPIO_Port, PE3_Pin);
+        led_flash_time = currentTime;
+    }
+#endif
 
 #ifdef ENABLE_STACK_WATERMARK
    // 获取并打印任务栈最小剩余空间

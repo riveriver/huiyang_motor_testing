@@ -62,6 +62,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 // #define ENABLE_STACK_WATERMARK
+#define ENABLE_FILE_LOG
 #define USE_HEARTBEAT_LED
 #define USE_MOBUSRTU_ENCODER
 #define USE_SD_LOG

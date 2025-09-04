@@ -1,27 +1,29 @@
-../Core/Src/main.cpp:86:13:void MPU_Config()	1
-../Core/Src/main.cpp:139:13:void CPU_CACHE_Enable()	5
-../Core/Src/main.cpp:161:6:void init_file()	4
+../Core/Src/main.cpp:87:13:void MPU_Config()	1
+../Core/Src/main.cpp:140:13:void CPU_CACHE_Enable()	5
+../Core/Src/main.cpp:161:13:void find_latest_file()	10
+../Core/Src/main.cpp:212:13:void create_new_file()	2
+../Core/Src/main.cpp:227:6:void init_file()	2
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:16:10:bool ModbusAbsoluteEncoder::isInitialized() const	1
-../Core/Src/main.cpp:196:6:void angleUpdateCallback(uint32_t)	1
-../Core/Src/main.cpp:213:13:void init_key()	1
-../Core/Src/main.cpp:224:13:void scan_key()	6
-../Core/Src/main.cpp:252:6:void StartDefaultTask(void*)	8
-../Core/Src/main.cpp:337:5:int main()	1
-../Core/Src/main.cpp:429:6:void SystemClock_Config()	4
-../Core/Src/main.cpp:487:6:void PeriphCommonClock_Config()	2
-../Core/Src/main.cpp:516:13:void MX_SDMMC1_SD_Init()	1
-../Core/Src/main.cpp:543:13:void MX_TIM3_Init()	4
-../Core/Src/main.cpp:591:13:void MX_USART2_UART_Init()	5
-../Core/Src/main.cpp:639:13:void MX_USART3_UART_Init()	5
-../Core/Src/main.cpp:687:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:734:6:void StartKeyTask(void*)	1
-../Core/Src/main.cpp:775:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
-../Core/Src/main.cpp:792:6:void Error_Handler()	1
-../Core/Src/main.cpp:800:1:void __static_initialization_and_destruction_0()	1
+../Core/Src/main.cpp:254:6:void angleUpdateCallback(uint32_t)	1
+../Core/Src/main.cpp:271:13:void init_key()	1
+../Core/Src/main.cpp:282:13:void scan_key()	7
+../Core/Src/main.cpp:318:6:void StartDefaultTask(void*)	6
+../Core/Src/main.cpp:392:5:int main()	1
+../Core/Src/main.cpp:484:6:void SystemClock_Config()	4
+../Core/Src/main.cpp:542:6:void PeriphCommonClock_Config()	2
+../Core/Src/main.cpp:571:13:void MX_SDMMC1_SD_Init()	1
+../Core/Src/main.cpp:598:13:void MX_TIM3_Init()	4
+../Core/Src/main.cpp:646:13:void MX_USART2_UART_Init()	5
+../Core/Src/main.cpp:694:13:void MX_USART3_UART_Init()	5
+../Core/Src/main.cpp:742:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:789:6:void StartKeyTask(void*)	3
+../Core/Src/main.cpp:844:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	2
+../Core/Src/main.cpp:861:6:void Error_Handler()	1
+../Core/Src/main.cpp:869:1:void __static_initialization_and_destruction_0()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/ModbusAbsoluteEncoder.h:12:13:virtual ModbusAbsoluteEncoder::~ModbusAbsoluteEncoder()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:Encoder485::~Encoder485()	1
 /home/river/st_ws/huiyang_motor_testing/Drivers/BSP/MODBUS-LIB/Encoder485.h:15:7:virtual Encoder485::~Encoder485()	1
-../Core/Src/main.cpp:800:1:void __static_initialization_and_destruction_1()	1
-../Core/Src/main.cpp:800:1:cpp)	1
-../Core/Src/main.cpp:800:1:cpp)	1
+../Core/Src/main.cpp:869:1:void __static_initialization_and_destruction_1()	1
+../Core/Src/main.cpp:869:1:cpp)	1
+../Core/Src/main.cpp:869:1:cpp)	1
